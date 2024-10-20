@@ -1,0 +1,696 @@
+<!--Header-->
+<h1 class="type--xlarge">Section Creator</h1>
+
+<!-- Short app explanation -->
+<!-- type--small mb-small -->
+<p class="type--small">How many sub sections per row?</p>
+
+<div class="flex-container mb-small mt-small">
+	<!-- Asks user for a key word-->
+	<label for="keyword-input">
+		<span class="label"># of sub-sections</span>
+		<input required class="input__field" id="keyword-input" type="text" placeholder="Number" />
+	</label>
+	
+  <hr class="divider" />
+  
+  <p class="type--small">Name your sections</p>
+	
+  <!--Asks user for the section name-->
+	<label for="input1">
+		<span class="label">Section</span>
+		<input class="input__field named" required type="text" placeholder="name" value="Overview" />
+	</label>
+	<label for="input2">
+		<span class="label">Section</span>
+		<input class="input__field named" required type="text" placeholder="Components" />
+	</label>
+	<label for="input3">
+		<span class="label">Section</span>
+		<input class="input__field named" required type="text" placeholder="Desktop" />
+	</label>
+	<label for="input4">
+		<span class="label">Section</span>
+		<input class="input__field named" required type="text" placeholder="Mobile" />
+	</label>
+
+	<div class="icon-button" id="addButton">
+		<div class="icon icon--plus"></div>
+	</div>
+</div>
+
+<!--Submit button-->
+<button class="button button--primary" id="submit">Let's Go</button>
+
+<script>
+	//Creates variables that allow us to access the HTML components
+	const keywordInput = document.getElementById("keyword-input");
+	const sectionInputs = document.getElementsByClassName("input__field named");
+
+	const addButton = document.querySelector(".icon-button");
+	const flexContainer = document.querySelector(".flex-container");
+
+	function addNewInput() {
+		const newLabel = document.createElement("label");
+		newLabel.setAttribute("for", `input${sectionInputs.length + 1}`);
+
+		const newSpan = document.createElement("span");
+		newSpan.className = "label";
+		newSpan.textContent = "Section";
+
+		const newInput = document.createElement("input");
+		newInput.className = "input__field named";
+		newInput.required = true;
+		newInput.type = "text";
+		newInput.placeholder = "name";
+
+		newLabel.appendChild(newSpan);
+		newLabel.appendChild(newInput);
+
+		flexContainer.insertBefore(newLabel, addButton);
+	}
+
+	//creates a listener that will activate whenever the button is clicked
+	addButton.addEventListener("click", addNewInput);
+
+	//Submit button
+	const submitButton = document.getElementById("submit");
+
+	//creates a listener that will activate whenever the button is clicked
+	submitButton.addEventListener("click", submitClicked);
+
+	//Takes input values and shares them with your Figma code
+	function submitClicked() {
+		const keyword = keywordInput.value;
+		const sectionNames = Array.from(sectionInputs).map((input) => input.value);
+		//Sends your values to your Figma code. * is the code's worker address
+		parent.postMessage({ pluginMessage: { keyword, sectionNames } }, "*");
+	}
+</script>
+
+<style>
+	body {
+		padding: 12px;
+	}
+
+	.flex-container {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.flex-container label {
+		display: flex;
+		flex-direction: row;
+		gap: 10px;
+	}
+	label > span {
+		width: 100px;
+	}
+	/* ------------------------------- */
+	/* Vars */
+	:root {
+		/* COLORS */
+		/* Accent */
+		--blue: #18a0fb;
+		--purple: #7b61ff;
+		--hot-pink: #ff00ff;
+		--green: #1bc47d;
+		--red: #f24822;
+		--yellow: #ffeb00;
+		/* Basic foreground */
+		--black: #000000;
+		--black8: rgba(0, 0, 0, 0.8);
+		--black8-opaque: #333333;
+		--black3: rgba(0, 0, 0, 0.3);
+		--black3-opaque: #b3b3b3;
+		--white: #ffffff;
+		--white8: rgba(255, 255, 255, 0.8);
+		--white4: rgba(255, 255, 255, 0.4);
+		/* Basic background */
+		--grey: #f0f0f0;
+		--silver: #e5e5e5;
+		--hud: #222222;
+		--toolbar: #2c2c2c;
+		/* Special */
+		--black1: rgba(0, 0, 0, 0.1);
+		--blue3: rgba(24, 145, 251, 0.3);
+		--purple4: rgba(123, 97, 255, 0.4);
+		--hover-fill: rgba(0, 0, 0, 0.06);
+		--selection-a: #daebf7;
+		--selection-b: #edf5fa;
+		--white2: rgba(255, 255, 255, 0.2);
+		/* TYPOGRAPHY */
+		/* Pos = positive applications (black on white) */
+		/* Neg = negative applications (white on black) */
+		/* Font stack */
+		--font-stack: "Inter", sans-serif;
+		/* Font sizes */
+		--font-size-xsmall: 11px;
+		--font-size-small: 12px;
+		--font-size-large: 13px;
+		--font-size-xlarge: 14px;
+		/* Font weights */
+		--font-weight-normal: 400;
+		--font-weight-medium: 500;
+		--font-weight-bold: 600;
+		/* Lineheight */
+		--font-line-height: 16px;
+		/* Use For xsmall, small font sizes */
+		--font-line-height-large: 24px;
+		/* Use For large, xlarge font sizes */
+		/* Letterspacing */
+		--font-letter-spacing-pos-xsmall: 0.005em;
+		--font-letter-spacing-neg-xsmall: 0.01em;
+		--font-letter-spacing-pos-small: 0;
+		--font-letter-spacing-neg-small: 0.005em;
+		--font-letter-spacing-pos-large: -0.0025em;
+		--font-letter-spacing-neg-large: 0.0025em;
+		--font-letter-spacing-pos-xlarge: -0.001em;
+		--font-letter-spacing-neg-xlarge: -0.001em;
+		/* BORDER RADIUS */
+		--border-radius-small: 2px;
+		--border-radius-med: 5px;
+		--border-radius-large: 6px;
+		/* SHADOWS */
+		--shadow-hud: 0 5px 17px rgba(0, 0, 0, 0.2), 0 2px 7px rgba(0, 0, 0, 0.15);
+		--shadow-floating-window: 0 2px 14px rgba(0, 0, 0, 0.15);
+		/* SPACING + SIZING */
+		--size-xxxsmall: 4px;
+		--size-xxsmall: 8px;
+		--size-xsmall: 16px;
+		--size-small: 24px;
+		--size-medium: 32px;
+		--size-large: 40px;
+		--size-xlarge: 48px;
+		--size-xxlarge: 64px;
+		--size-xxxlarge: 80px;
+	}
+
+	/* Global styles */
+	* {
+		box-sizing: border-box;
+	}
+
+	body {
+		position: relative;
+		box-sizing: border-box;
+		font-family: "Inter", sans-serif;
+	}
+
+	/* layout utilities */
+	.hidden {
+		display: none;
+	}
+
+	.inline {
+		display: inline;
+	}
+
+	.block {
+		display: block;
+	}
+
+	.inline-block {
+		display: inline-block;
+	}
+
+	.flex {
+		display: flex;
+	}
+
+	.inline-flex {
+		display: inline-flex;
+	}
+
+	.column {
+		flex-direction: column;
+	}
+
+	.row {
+		flex-direction: row;
+	}
+
+	.flex-wrap {
+		flex-wrap: wrap;
+	}
+
+	/* margin bottom */
+	.mb-xxxsmall {
+		margin-bottom: var(--size-xxxsmall);
+	}
+
+	.mb-xxsmall {
+		margin-bottom: var(--size-xxsmall);
+	}
+
+	.mb-xsmall {
+		margin-bottom: var(--size-xsmall);
+	}
+
+	.mb-small {
+		margin-bottom: var(--size-small);
+	}
+	.mt-small {
+		margin-top: var(--size-small);
+	}
+
+	.mb-medium {
+		margin-bottom: var(--size-medium);
+	}
+
+	.mb-large {
+		margin-bottom: var(--size-large);
+	}
+
+	.mb-xlarge {
+		margin-bottom: var(--size-xlarge);
+	}
+
+	.mb-xxlarge {
+		margin-bottom: var(--size-xxlarge);
+	}
+
+	.button {
+		display: flex;
+		align-items: center;
+		border-radius: var(--border-radius-large);
+		color: var(--white);
+		flex-shrink: 0;
+		font-family: var(--font-stack);
+		font-size: var(--font-size-xsmall);
+		font-weight: var(--font-weight-medium);
+		letter-spacing: var(--font-letter-spacing-neg-small);
+		line-height: var(--font-line-height);
+		height: var(--size-medium);
+		padding: 0 var(--size-xsmall) 0 var(--size-xsmall);
+		text-decoration: none;
+		outline: none;
+		border: 2px solid transparent;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+	}
+
+	.button--primary {
+		background-color: var(--blue);
+	}
+
+	.button--primary:enabled:active,
+	.button--primary:enabled:focus {
+		border: 2px solid var(--black3);
+	}
+
+	.button--primary:disabled {
+		background-color: var(--black3);
+	}
+
+	.button--primary-destructive {
+		background-color: var(--red);
+	}
+
+	.button--primary-destructive:enabled:active,
+	.button--primary-destructive:enabled:focus {
+		border: 2px solid var(--black3);
+	}
+
+	.button--primary-destructive:disabled {
+		opacity: 0.3;
+	}
+
+	.button--secondary,
+	.button--secondary-destructive {
+		background-color: var(--white);
+		border: 1px solid var(--black8);
+		color: var(--black8);
+		padding: 0 calc(var(--size-xsmall) + 1px) 0 calc(var(--size-xsmall) + 1px);
+		letter-spacing: var(--font-letter-spacing-pos-small);
+	}
+
+	.button--secondary:enabled:active,
+	.button--secondary-destructive:enabled:active,
+	.button--secondary:enabled:focus,
+	.button--secondary-destructive:enabled:focus {
+		border: 2px solid var(--blue);
+		padding: 0 var(--size-xsmall) 0 var(--size-xsmall);
+	}
+
+	.button--secondary:disabled,
+	.button--secondary-destructive:disabled {
+		border: 1px solid var(--black3);
+		color: var(--black3);
+	}
+
+	.button--secondary-destructive {
+		border-color: var(--red);
+		color: var(--red);
+	}
+
+	.button--secondary-destructive:disabled {
+		background-color: var(--white);
+	}
+
+	.button--secondary-destructive:enabled:active,
+	.button--secondary-destructive:enabled:focus {
+		border: 2px solid var(--red);
+		padding: 0 var(--size-xsmall) 0 var(--size-xsmall);
+	}
+
+	.button--secondary-destructive:disabled {
+		border: 1px solid var(--red);
+		background-color: var(--white);
+		color: var(--red);
+		opacity: 0.4;
+	}
+
+	.button--tertiary,
+	.button--tertiary-destructive {
+		border: 1px solid transparent;
+		color: var(--blue);
+		background-color: transparent;
+		padding: 0;
+		font-weight: var(--font-weight-normal);
+		letter-spacing: var(--font-letter-spacing-pos-small);
+		cursor: pointer;
+	}
+
+	.button--tertiary:enabled:focus,
+	.button--tertiary-destructive:enabled:focus {
+		text-decoration: underline;
+	}
+
+	.button--tertiary:disabled,
+	.button--tertiary-destructive:disabled {
+		cursor: default;
+		color: var(--black3);
+	}
+
+	.button--tertiary-destructive {
+		color: var(--red);
+	}
+
+	.button--tertiary-destructive:enabled:focus {
+		text-decoration: underline;
+	}
+
+	.button--tertiary-destructive:disabled {
+		opacity: 0.4;
+	}
+
+	.icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: default;
+		width: var(--size-medium);
+		height: var(--size-medium);
+		font-family: var(--font-stack);
+		font-size: var(--font-size-xsmall);
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+		background-position: 50% 50%;
+	}
+
+	.icon--spin {
+		-webkit-animation: rotating 1s linear infinite;
+		animation: rotating 1s linear infinite;
+	}
+
+	@-webkit-keyframes rotating {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@keyframes rotating {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.icon--check {
+		background-image: url("data:image/svg+xml;charset=utf8,%3Csvg fill='none' height='32' width='32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath clip-rule='evenodd' d='M21.207 13.707L15 19.914l-3.707-3.707 1.414-1.414L15 17.086l4.793-4.793z' fill='%23000' fill-rule='evenodd'/%3E%3C/svg%3E");
+	}
+
+	.icon--minus {
+		background-image: url("data:image/svg+xml;charset=utf8,%3Csvg fill='none' height='32' width='32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M21.5 16.5h-11v-1h11z' fill='%23000'/%3E%3C/svg%3E");
+	}
+
+	.icon--plus {
+		background-image: url("data:image/svg+xml;charset=utf8,%3Csvg fill='none' height='32' width='32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.5 15.5v-5h1v5h5v1h-5v5h-1v-5h-5v-1z' fill='%23000'/%3E%3C/svg%3E");
+	}
+
+	.icon--trash {
+		background-image: url("data:image/svg+xml;charset=utf8,%3Csvg fill='none' height='32' width='32' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000'%3E%3Cpath d='M14 18.5v-4h1v4zM17 18.5v-4h1v4z'/%3E%3Cpath clip-rule='evenodd' d='M19 10.5a2 2 0 00-2-2h-2a2 2 0 00-2 2h-3v1h1v10a2 2 0 002 2h6a2 2 0 002-2v-10h1v-1zm-4-1a1 1 0 00-1 1h4a1 1 0 00-1-1zm5 2h-8v10a1 1 0 001 1h6a1 1 0 001-1z' fill-rule='evenodd'/%3E%3C/g%3E%3C/svg%3E");
+	}
+
+	.icon-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		width: var(--size-medium);
+		height: var(--size-medium);
+		border-radius: var(--border-radius-small);
+		border: 2px solid transparent;
+	}
+
+	.icon-button * {
+		filter: invert(0%) sepia(0%) saturate(7500%) hue-rotate(117deg) brightness(109%) contrast(105%);
+	}
+
+	.icon-button:hover {
+		background: var(--hover-fill);
+	}
+
+	.icon-button:active,
+	.icon-button:focus {
+		border: 2px solid var(--blue);
+		outline: none;
+	}
+
+	.icon-button--selected {
+		background-color: var(--blue);
+	}
+
+	.icon-button--selected:hover {
+		background-color: var(--blue);
+	}
+
+	.icon-button--selected:active,
+	.icon-button--selected:focus {
+		border: 2px solid var(--black3);
+	}
+
+	.icon-button--selected * {
+		filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(269deg) brightness(103%) contrast(104%);
+	}
+
+	.input {
+		position: relative;
+	}
+
+	.input__field {
+		font-size: var(--font-size-xsmall);
+		font-weight: var(--font-weight-normal);
+		letter-spacing: var(--font-letter-spacing-neg-xsmall);
+		line-height: var(--line-height);
+		position: relative;
+		display: flex;
+		overflow: visible;
+		align-items: center;
+		width: 100%;
+		height: 30px;
+		margin: 1px 0 1px 0;
+		padding: var(--size-xxsmall) var(--size-xxxsmall) var(--size-xxsmall) var(--size-xxsmall);
+		color: var(--black8);
+		border: 1px solid transparent;
+		border-radius: var(--border-radius-small);
+		outline: none;
+		background-color: var(--white);
+	}
+
+	.input__field:hover,
+	.input__field:placeholder-shown:hover {
+		color: var(--black8);
+		border: 1px solid var(--black1);
+		background-image: none;
+	}
+
+	.input__field::-moz-selection {
+		color: var(--black);
+		background-color: var(--blue3);
+	}
+
+	.input__field::selection {
+		color: var(--black);
+		background-color: var(--blue3);
+	}
+
+	.input__field::-moz-placeholder {
+		color: var(--black3);
+		border: 1px solid transparent;
+	}
+
+	.input__field:-ms-input-placeholder {
+		color: var(--black3);
+		border: 1px solid transparent;
+	}
+
+	.input__field::placeholder {
+		color: var(--black3);
+		border: 1px solid transparent;
+	}
+
+	.input__field:placeholder-shown {
+		border: 1px solid var(--black1);
+	}
+
+	.input__field:focus:placeholder-shown {
+		border: 1px solid var(--blue);
+		outline: 1px solid var(--blue);
+		outline-offset: -2px;
+	}
+
+	.input__field:disabled:hover {
+		border: 1px solid transparent;
+	}
+
+	.input__field:active,
+	.input__field:focus {
+		color: var(--black);
+		border: 1px solid var(--blue);
+		outline: 1px solid var(--blue);
+		outline-offset: -2px;
+	}
+
+	.input__field:disabled {
+		position: relative;
+		color: var(--black3);
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+	}
+
+	.input__field:disabled:active {
+		outline: none;
+	}
+
+	.input--with-icon .input__field {
+		padding-left: 32px;
+	}
+
+	.input--borders {
+		border: 1px solid var(--black1);
+	}
+
+	.input .icon {
+		position: absolute;
+		top: 0px;
+		left: 0;
+		width: var(--size-medium);
+		height: var(--size-medium);
+		z-index: 1;
+		opacity: 0.3;
+	}
+
+	.label {
+		font-size: var(--font-size-xsmall);
+		font-weight: var(--font-weight-normal);
+		letter-spacing: var(--font-letter-spacing-pos-xsmall);
+		line-height: var(--line-height);
+		color: var(--black2);
+		height: var(--size-medium);
+		display: flex;
+		align-items: center;
+		cursor: default;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+		padding: 0 var(--size-xxxsmall) 0 var(--size-xxsmall);
+	}
+
+	.section-title {
+		font-size: var(--font-size-xsmall);
+		font-weight: var(--font-weight-bold);
+		letter-spacing: var(--font-letter-spacing-pos-xsmall);
+		line-height: var(--line-height);
+		color: var(--black8);
+		height: var(--size-medium);
+		width: 100%;
+		display: flex;
+		align-items: center;
+		cursor: default;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+		padding: 0 calc(var(--size-xxsmall) / 2) 0 var(--size-xxsmall);
+	}
+
+	.type {
+		font-family: var(--font-stack);
+		font-size: var(--font-size-xsmall);
+		font-weight: var(--font-weight-normal);
+		line-height: var(--font-line-height);
+		letter-spacing: var(--font-letter-spacing-pos-xsmall);
+		/* sizes */
+		/* weights */
+		/* letter spacing adjustments based pos/neg application */
+	}
+
+	.type--small {
+		font-size: var(--font-size-small);
+		letter-spacing: var(--font-letter-spacing-pos-small);
+	}
+
+	.type--large {
+		font-size: var(--font-size-large);
+		line-height: var(--font-line-height-large);
+		letter-spacing: var(--font-letter-spacing-pos-large);
+	}
+
+	.type--xlarge {
+		font-size: var(--font-size-xlarge);
+		line-height: var(--font-line-height-large);
+		letter-spacing: var(--font-letter-spacing-pos-xlarge);
+	}
+
+	.type--medium {
+		font-weight: var(--font-weight-medium);
+	}
+
+	.type--bold {
+		font-weight: var(--font-weight-bold);
+	}
+
+	.type--inverse {
+		letter-spacing: var(--font-letter-spacing-neg-xsmall);
+	}
+
+	.type--inverse + .type--small {
+		letter-spacing: var(--font-letter-spacing-neg-small);
+	}
+
+	.type--inverse + .type--large {
+		letter-spacing: var(--font-letter-spacing-neg-large);
+	}
+
+	.type--inverse + .type--xlarge {
+		letter-spacing: var(--font-letter-spacing-neg-xlarge);
+	}
+
+	.type--inline {
+		display: inline-block;
+	}
+</style>
