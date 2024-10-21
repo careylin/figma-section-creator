@@ -7,7 +7,7 @@
 figma.showUI(__html__);
 
 //Resize it
-figma.ui.resize(500, 500);
+figma.ui.resize(300, 500);
 
 //Listen for messages from UI
 figma.ui.onmessage = (message) => {
