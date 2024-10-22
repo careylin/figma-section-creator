@@ -69,8 +69,31 @@ async function createSections(keyword: number, sectionNames: string[]) {
 			subSec.x = SEC_PADDING + coverTile.width + j * (subSec.width + SUB_GAP);
 			subSec.y = SEC_PADDING;
 			subSec.fills = [{ type: "SOLID", color: { r: 1, g: 1, b: 1 }, opacity: 1 }];
+			subSec.name = `—`;
 
-			// //Create title section for each subsection
+			//Create autolayout frame for title and subtitle
+			const titleFrame = figma.createFrame();
+			titleFrame.layoutMode = "VERTICAL";
+			titleFrame.itemSpacing = 24; // 24px vertical gap
+
+			titleFrame.paddingLeft = 0;
+			titleFrame.paddingRight = 0;
+			titleFrame.paddingTop = 0;
+			titleFrame.paddingBottom = 0;
+			titleFrame.strokes = [{
+				type: "SOLID",
+				color: { r: 0, g: 0, b: 0 }, // Black color
+				opacity: 0.1 // 10% opacity for a subtle effect
+			  }];
+			titleFrame.strokeBottomWeight = 1; // 1px stroke weight only at the bottom
+			titleFrame.strokeTopWeight = 0;
+			titleFrame.strokeLeftWeight = 0;
+			titleFrame.strokeRightWeight = 0;
+			titleFrame.primaryAxisSizingMode = "AUTO";
+			titleFrame.counterAxisSizingMode = "FIXED";
+			titleFrame.name = "Title Frame";
+
+			// Create title section for each subsection
 			const titleText = figma.createText();
 			titleText.fontName = FONT;
 			titleText.x = 300;
@@ -87,7 +110,7 @@ async function createSections(keyword: number, sectionNames: string[]) {
 			subtitleText.fontSize = 24;
 			subtitleText.fills = [{ type: "SOLID", color: { r: 0, g: 0, b: 0 } }];
 			subtitleText.x = titleText.x;
-			subtitleText.y = titleText.y + titleText.height + 80
+			subtitleText.y = titleText.y + titleFrame.height + 80
 			subtitleText.name = "Subtitle";
 
 			// Create a frame for content
@@ -114,7 +137,7 @@ async function createSections(keyword: number, sectionNames: string[]) {
 			// Create a new text node for notes
 			const notesText = figma.createText();
 			notesText.fontName = FONT;
-			notesText.characters = "Notes that are really long and important";
+			notesText.characters = "Notes";
 			notesText.fontSize = 24;
 			notesText.fills = [{ type: "SOLID", color: { r: 0.482, g: 0.38, b: 1 } }]; // Purple color
 
@@ -129,6 +152,12 @@ async function createSections(keyword: number, sectionNames: string[]) {
 				type: "UNORDERED",
 			});
 
+			const titleFrameWidth = subSec.width - (300*2);
+			// Add title to title frame
+			titleFrame.appendChild(titleText);
+			titleFrame.x = 300;
+			titleFrame.y = 200;
+			titleFrame.resize(titleFrameWidth, 80);
 
 			// Add the notes text to the auto layout frame
 			notesFrame.appendChild(notesText);
@@ -138,7 +167,7 @@ async function createSections(keyword: number, sectionNames: string[]) {
 			notesFrame.x = contentFrame.x;
 			notesFrame.y = contentFrame.y + contentFrame.height + 100;
 			
-			subSec.appendChild(titleText);
+			subSec.appendChild(titleFrame);
 			subSec.appendChild(contentFrame);
 			subSec.appendChild(subtitleText);
 			subSec.appendChild(notesFrame);
