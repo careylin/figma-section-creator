@@ -4,9 +4,9 @@
 
 <div class="flex-container mb-small mt-small">
 	<!-- Asks user for a key word-->
-	<label for="keyword-input">
+	<label for="sub-sections-input">
 		<span class="label"># of sub-sections</span>
-		<input required class="input__field" id="keyword-input" type="text" placeholder="Number" />
+		<input required class="input__field" id="sub-sections-input" type="text" placeholder="Number" />
 	</label>
 	
   <hr class="divider" />
@@ -41,85 +41,52 @@
 <button class="button button--primary" id="submit">Let's Go</button>
 
 <script>
+	// Get elements
 	const flexContainer = document.querySelector(".flex-container");
-	
-	// button row
 	const buttonRow = document.querySelector(".flex.row");
-	
-	//Get the inputs
-	const keywordInput = document.getElementById("keyword-input");
-	const sectionInputs = document.getElementsByClassName("input__field named");
-	
-	//Add inputs
+	const subSectionsInput = document.getElementById("sub-sections-input");
 	const addButton = document.getElementById("addButton");
-
-	function addNewInput() {
-		const newLabel = document.createElement("label");
-		newLabel.setAttribute("for", `input${sectionInputs.length + 1}`);
-
-		const newSpan = document.createElement("span");
-		newSpan.className = "label";
-		newSpan.textContent = "Section";
-
-		const newInput = document.createElement("input");
-		newInput.className = "input__field named";
-		newInput.required = true;
-		newInput.type = "text";
-		newInput.placeholder = "name";
-
-		newLabel.appendChild(newSpan);
-		newLabel.appendChild(newInput);
-
-		// Insert the new label before the button row
-		flexContainer.insertBefore(newLabel, buttonRow);
-	}
-
-	addButton.addEventListener("click", addNewInput);
-
-	//Remove inputs
 	const removeButton = document.getElementById("removeButton");
-
-	function removeLastInput() {
-		const inputs = document.querySelectorAll(".input__field.named");
-		if (inputs.length > 1) {
-			const lastInput = inputs[inputs.length - 1];
-			lastInput.parentElement.remove();
-		}
-	}
-	
-	removeButton.addEventListener("click", removeLastInput);
-
-	//Submit
 	const submitButton = document.getElementById("submit");
 
-	submitButton.addEventListener("click", submitClicked);
-
-	function submitClicked() {
-		const keyword = keywordInput.value;
-		const sectionNames = Array.from(sectionInputs).map((input) => input.value);
-		//Sends your values to your Figma code. * is the code's worker address
-		parent.postMessage({ pluginMessage: { keyword, sectionNames } }, "*");
+	// Create new section input row
+	function createSectionInput() {
+		const inputs = document.getElementsByClassName("input__field named");
+		const template = `
+			<label for="input${inputs.length + 1}">
+				<span class="label">Section</span>
+				<input class="input__field named" required type="text" placeholder="name">
+			</label>
+		`;
+		buttonRow.insertAdjacentHTML('beforebegin', template);
 	}
+
+	// Remove last section input if more than one exists
+	function removeSectionInput() {
+		const inputs = document.querySelectorAll(".input__field.named");
+		if (inputs.length > 1) {
+			inputs[inputs.length - 1].parentElement.remove();
+		}
+	}
+
+	// Submit form data to Figma
+	function submitForm() {
+		const sectionInputs = document.getElementsByClassName("input__field named");
+		const pluginMessage = {
+			numberOfSubSections: subSectionsInput.value,
+			sectionNames: Array.from(sectionInputs).map(input => input.value)
+		};
+		parent.postMessage({ pluginMessage }, "*");
+	}
+
+	// Add event listeners
+	addButton.addEventListener("click", createSectionInput);
+	removeButton.addEventListener("click", removeSectionInput); 
+	submitButton.addEventListener("click", submitForm);
 </script>
 
 <style>
-	body {
-		padding: 12px;
-	}
 
-	.flex-container {
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-	}
-	.flex-container label {
-		display: flex;
-		flex-direction: row;
-		gap: 10px;
-	}
-	label > span {
-		width: 100px;
-	}
 	/* ------------------------------- */
 	/* Vars */
 	:root {
@@ -205,15 +172,39 @@
 		position: relative;
 		box-sizing: border-box;
 		font-family: "Inter", sans-serif;
+		padding: 12px;
+	}
+
+	.flex-container {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.flex-container label {
+		display: flex;
+		flex-direction: row;
+		gap: 10px;
+	}
+
+	label > span {
+		width: 100px;
+	}
+
+	/* Global styles */
+	* {
+		box-sizing: border-box;
+	}
+
+	body {
+		position: relative;
+		box-sizing: border-box;
+		font-family: "Inter", sans-serif;
 	}
  
 	/* layout utilities */
 	.hidden {
 		display: none;
-	}
-
-	.inline {
-		display: inline;
 	}
 
 	.block {
@@ -244,40 +235,11 @@
 		flex-wrap: wrap;
 	}
 
-	/* margin bottom */
-	.mb-xxxsmall {
-		margin-bottom: var(--size-xxxsmall);
-	}
-
-	.mb-xxsmall {
-		margin-bottom: var(--size-xxsmall);
-	}
-
-	.mb-xsmall {
-		margin-bottom: var(--size-xsmall);
-	}
-
 	.mb-small {
 		margin-bottom: var(--size-small);
 	}
 	.mt-small {
 		margin-top: var(--size-small);
-	}
-
-	.mb-medium {
-		margin-bottom: var(--size-medium);
-	}
-
-	.mb-large {
-		margin-bottom: var(--size-large);
-	}
-
-	.mb-xlarge {
-		margin-bottom: var(--size-xlarge);
-	}
-
-	.mb-xxlarge {
-		margin-bottom: var(--size-xxlarge);
 	}
 
 	.button {
@@ -315,97 +277,6 @@
 		background-color: var(--black3);
 	}
 
-	.button--primary-destructive {
-		background-color: var(--red);
-	}
-
-	.button--primary-destructive:enabled:active,
-	.button--primary-destructive:enabled:focus {
-		border: 2px solid var(--black3);
-	}
-
-	.button--primary-destructive:disabled {
-		opacity: 0.3;
-	}
-
-	.button--secondary,
-	.button--secondary-destructive {
-		background-color: var(--white);
-		border: 1px solid var(--black8);
-		color: var(--black8);
-		padding: 0 calc(var(--size-xsmall) + 1px) 0 calc(var(--size-xsmall) + 1px);
-		letter-spacing: var(--font-letter-spacing-pos-small);
-	}
-
-	.button--secondary:enabled:active,
-	.button--secondary-destructive:enabled:active,
-	.button--secondary:enabled:focus,
-	.button--secondary-destructive:enabled:focus {
-		border: 2px solid var(--blue);
-		padding: 0 var(--size-xsmall) 0 var(--size-xsmall);
-	}
-
-	.button--secondary:disabled,
-	.button--secondary-destructive:disabled {
-		border: 1px solid var(--black3);
-		color: var(--black3);
-	}
-
-	.button--secondary-destructive {
-		border-color: var(--red);
-		color: var(--red);
-	}
-
-	.button--secondary-destructive:disabled {
-		background-color: var(--white);
-	}
-
-	.button--secondary-destructive:enabled:active,
-	.button--secondary-destructive:enabled:focus {
-		border: 2px solid var(--red);
-		padding: 0 var(--size-xsmall) 0 var(--size-xsmall);
-	}
-
-	.button--secondary-destructive:disabled {
-		border: 1px solid var(--red);
-		background-color: var(--white);
-		color: var(--red);
-		opacity: 0.4;
-	}
-
-	.button--tertiary,
-	.button--tertiary-destructive {
-		border: 1px solid transparent;
-		color: var(--blue);
-		background-color: transparent;
-		padding: 0;
-		font-weight: var(--font-weight-normal);
-		letter-spacing: var(--font-letter-spacing-pos-small);
-		cursor: pointer;
-	}
-
-	.button--tertiary:enabled:focus,
-	.button--tertiary-destructive:enabled:focus {
-		text-decoration: underline;
-	}
-
-	.button--tertiary:disabled,
-	.button--tertiary-destructive:disabled {
-		cursor: default;
-		color: var(--black3);
-	}
-
-	.button--tertiary-destructive {
-		color: var(--red);
-	}
-
-	.button--tertiary-destructive:enabled:focus {
-		text-decoration: underline;
-	}
-
-	.button--tertiary-destructive:disabled {
-		opacity: 0.4;
-	}
 
 	.icon {
 		display: flex;
@@ -421,29 +292,6 @@
 		-ms-user-select: none;
 		user-select: none;
 		background-position: 50% 50%;
-	}
-
-	.icon--spin {
-		-webkit-animation: rotating 1s linear infinite;
-		animation: rotating 1s linear infinite;
-	}
-
-	@-webkit-keyframes rotating {
-		from {
-			transform: rotate(0deg);
-		}
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	@keyframes rotating {
-		from {
-			transform: rotate(0deg);
-		}
-		to {
-			transform: rotate(360deg);
-		}
 	}
 
 	.icon--minus {
@@ -591,10 +439,6 @@
 		outline: none;
 	}
 
-	.input--with-icon .input__field {
-		padding-left: 32px;
-	}
-
 	.input--borders {
 		border: 1px solid var(--black1);
 	}
@@ -626,33 +470,12 @@
 		padding: 0 var(--size-xxxsmall) 0 var(--size-xxsmall);
 	}
 
-	.section-title {
-		font-size: var(--font-size-xsmall);
-		font-weight: var(--font-weight-bold);
-		letter-spacing: var(--font-letter-spacing-pos-xsmall);
-		line-height: var(--line-height);
-		color: var(--black8);
-		height: var(--size-medium);
-		width: 100%;
-		display: flex;
-		align-items: center;
-		cursor: default;
-		-webkit-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		user-select: none;
-		padding: 0 calc(var(--size-xxsmall) / 2) 0 var(--size-xxsmall);
-	}
-
 	.type {
 		font-family: var(--font-stack);
 		font-size: var(--font-size-xsmall);
 		font-weight: var(--font-weight-normal);
 		line-height: var(--font-line-height);
 		letter-spacing: var(--font-letter-spacing-pos-xsmall);
-		/* sizes */
-		/* weights */
-		/* letter spacing adjustments based pos/neg application */
 	}
 
 	.type--small {
@@ -660,24 +483,9 @@
 		letter-spacing: var(--font-letter-spacing-pos-small);
 	}
 
-	.type--large {
-		font-size: var(--font-size-large);
-		line-height: var(--font-line-height-large);
-		letter-spacing: var(--font-letter-spacing-pos-large);
-	}
-
 	.type--xlarge {
 		font-size: var(--font-size-xlarge);
 		line-height: var(--font-line-height-large);
 		letter-spacing: var(--font-letter-spacing-pos-xlarge);
 	}
-
-	.type--medium {
-		font-weight: var(--font-weight-medium);
-	}
-
-	.type--bold {
-		font-weight: var(--font-weight-bold);
-	}
 </style>
-
