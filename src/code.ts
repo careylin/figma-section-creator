@@ -54,7 +54,7 @@ async function createSections(numberOfSubSections: number, sectionNames: string[
 			const subSec = figma.createSection();
 			subSec.name = "—";
 			subSec.resizeWithoutConstraints(3220, TILE_HEIGHT);
-			subSec.x = SEC_PADDING + coverTile.width + j * (subSec.width + SUB_GAP);
+      // define x position later down
 			subSec.y = SEC_PADDING;
 			subSec.fills = [{ type: "SOLID", color: { r: 1, g: 1, b: 1 }, opacity: 1 }];
 
@@ -164,6 +164,8 @@ async function createSections(numberOfSubSections: number, sectionNames: string[
 			subSecWidth = contentWidth + subSecMargin;
 			subSec.resizeWithoutConstraints(subSecWidth, TILE_HEIGHT);
 			titleFrame.resize(contentWidth, 80);
+      subSec.x = SEC_PADDING + coverTile.width + j * (subSec.width + SUB_GAP);
+
 
 			// Add all elements to subsection
 			subSec.appendChild(titleFrame);
