@@ -1,5 +1,5 @@
 {
-  "name": "figma-section-creator",
+  "name": "denali-section-generator",
   "version": "1.0.0",
   "description": "Create sections for handoff",
   "main": "dist/code.js",
@@ -42,6 +42,7 @@
     }
   },
   "dependencies": {
-    "figma-plugin-ds": "^1.0.1"
+    "figma-plugin-ds": "^1.0.1",
+    "lucide-react": "^0.453.0"
   }
 }
