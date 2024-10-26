@@ -1,64 +1,78 @@
-<!--Header-->
-<h1 class="type--xlarge">Section Creator</h1>
-<p class="type--small">How many sub sections per row?</p>
+	<!-- Number of Main sections -->	
 
-<div class="flex-container mb-small mt-small">
-	<!-- Asks user for a key word-->
-	<label for="sub-sections-input">
-		<span class="label"># of sub-sections</span>
-		<input required class="input__field" id="sub-sections-input" type="text" placeholder="Number" />
+	<div class="flex row subsection-counter">
+		<p class="type--small">Number of main sections</p>
+		<div class="flex row">
+			<div class="icon-button" id="addInput">
+				<div class="icon icon--plus"></div>
+			</div>
+			<div class="icon-button" id="removeInput">
+				<div class="icon icon--minus"></div>
+			</div>
+		</div>
+	</div>
+	<div class="flex column input-stack">
+		<!--Asks user for the section name-->
+		<label class="input__field-container" for="input1">
+		<span class="label text-label">Section</span>
+		<input class="input__field named" required type="text" placeholder="Overview" />
 	</label>
-	
-  <hr class="divider" />
-  
-  <p class="type--small">Name your sections</p>
-	
-  <!--Asks user for the section name-->
-	<label for="input1">
-		<span class="label">Section</span>
-		<input class="input__field named" required type="text" placeholder="name" value="Overview" />
-	</label>
-	<label for="input2">
-		<span class="label">Section</span>
+	<label class="input__field-container" for="input2">
+		<span class="label text-label">Section</span>
 		<input class="input__field named" required type="text" placeholder="Components" />
 	</label>
-	<label for="input3">
-		<span class="label">Section</span>
-		<input class="input__field named" required type="text" placeholder="Desktop" />
-	</label>
-
-	<div class="flex row">
-		<div class="icon-button" id="addButton">
-			<div class="icon icon--plus"></div>
-		</div>
-		<div class="icon-button" id="removeButton">
-			<div class="icon icon--minus"></div>
+</div>
+<hr class="divider mb-small mt-small" />
+<!--subsections	-->
+<div class="flex-container">
+	<div class="flex row subsection-counter">
+		<p class="type--small">Subsections per row</p>
+		<div class="flex row">
+			<div class="icon-button" id="addSubSection">
+				<div class="icon icon--plus"></div>
+			</div>
+			<label for="sub-sections-input">
+				<input required class="input__field" id="sub-sections-input" type="text" value="1" />
+			</label>
+			<div class="icon-button" id="removeSubSection">
+				<div class="icon icon--minus"></div>
+			</div>
 		</div>
 	</div>
 </div>
+<div class="flex column mb-xsmall">
+	<label class="input__field-container">
+		<input type="checkbox" id="includeMobile" class="checkbox" />
+		<span class="label">Include mobile screens</span>
+	</label>
+	<label class="input__field-container">
+		<input type="checkbox" id="includeDesktop" class="checkbox" />
+		<span class="label">Include desktop screens</span>
+	</label>
+	</div>
 
 <!--Submit button-->
-<button class="button button--primary" id="submit">Let's Go</button>
-
+<button class="button button--primary" id="submit">Generate</button>
 <script>
 	// Get elements
-	const flexContainer = document.querySelector(".flex-container");
-	const buttonRow = document.querySelector(".flex.row");
+	const inputStack = document.querySelector(".input-stack");
 	const subSectionsInput = document.getElementById("sub-sections-input");
-	const addButton = document.getElementById("addButton");
-	const removeButton = document.getElementById("removeButton");
+	const addInput = document.getElementById("addInput");
+	const removeInput = document.getElementById("removeInput");
+	const addSubSection = document.getElementById("addSubSection");
+	const removeSubSection = document.getElementById("removeSubSection");
 	const submitButton = document.getElementById("submit");
 
 	// Create new section input row
 	function createSectionInput() {
 		const inputs = document.getElementsByClassName("input__field named");
 		const template = `
-			<label for="input${inputs.length + 1}">
-				<span class="label">Section</span>
+			<label class="input__field-container" for="input${inputs.length + 1}">
+				<span class="label text-label">Section</span>
 				<input class="input__field named" required type="text" placeholder="name">
 			</label>
 		`;
-		buttonRow.insertAdjacentHTML('beforebegin', template);
+		inputStack.insertAdjacentHTML("beforeend", template);
 	}
 
 	// Remove last section input if more than one exists
@@ -68,25 +82,47 @@
 			inputs[inputs.length - 1].parentElement.remove();
 		}
 	}
+	addInput.addEventListener("click", createSectionInput);
+	removeInput.addEventListener("click", removeSectionInput);
 
-	// Submit form data to Figma
+	// Increment subsection count
+	function addSubSectionCount() {
+		const currentValue = parseInt(subSectionsInput.value);
+		subSectionsInput.value = currentValue + 1;
+	}
+
+	// Decrement subsection count if greater than 1
+	function removeSubSectionCount() {
+		const currentValue = parseInt(subSectionsInput.value);
+		if (currentValue > 1) {
+			subSectionsInput.value = currentValue - 1;
+		}
+	}
+
+	// Add event listeners for subsection buttons
+	addSubSection.addEventListener("click", addSubSectionCount);
+	removeSubSection.addEventListener("click", removeSubSectionCount);
+
+	// Get checkbox elements
+	const mobileCheckbox = document.getElementById("includeMobile");
+	const desktopCheckbox = document.getElementById("includeDesktop");
+	// Update submit form to include mobile checkbox state
 	function submitForm() {
 		const sectionInputs = document.getElementsByClassName("input__field named");
 		const pluginMessage = {
 			numberOfSubSections: subSectionsInput.value,
-			sectionNames: Array.from(sectionInputs).map(input => input.value)
+			sectionNames: Array.from(sectionInputs).map((input) => input.value),
+			includeMobile: mobileCheckbox.checked,
+			includeDesktop: desktopCheckbox.checked
 		};
 		parent.postMessage({ pluginMessage }, "*");
 	}
 
 	// Add event listeners
-	addButton.addEventListener("click", createSectionInput);
-	removeButton.addEventListener("click", removeSectionInput); 
 	submitButton.addEventListener("click", submitForm);
 </script>
 
 <style>
-
 	/* ------------------------------- */
 	/* Vars */
 	:root {
@@ -172,22 +208,27 @@
 		position: relative;
 		box-sizing: border-box;
 		font-family: "Inter", sans-serif;
-		padding: 12px;
+		margin: 0;
+		padding: 8px 16px;
 	}
 
 	.flex-container {
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
 	}
 
-	.flex-container label {
+	.input__field-container {
 		display: flex;
 		flex-direction: row;
-		gap: 10px;
+		gap: 4px;
 	}
 
-	label > span {
+	.subsection-counter {
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.text-label {
 		width: 100px;
 	}
 
@@ -195,13 +236,10 @@
 	* {
 		box-sizing: border-box;
 	}
-
-	body {
-		position: relative;
-		box-sizing: border-box;
-		font-family: "Inter", sans-serif;
+	.divider {
+		border-top: 1px solid var(--silver);
 	}
- 
+
 	/* layout utilities */
 	.hidden {
 		display: none;
@@ -219,10 +257,6 @@
 		display: flex;
 	}
 
-	.inline-flex {
-		display: inline-flex;
-	}
-
 	.column {
 		flex-direction: column;
 	}
@@ -231,12 +265,11 @@
 		flex-direction: row;
 	}
 
-	.flex-wrap {
-		flex-wrap: wrap;
-	}
-
 	.mb-small {
 		margin-bottom: var(--size-small);
+	}
+	.mb-xsmall {
+		margin-bottom: var(--size-xxsmall);
 	}
 	.mt-small {
 		margin-top: var(--size-small);
@@ -277,7 +310,6 @@
 		background-color: var(--black3);
 	}
 
-
 	.icon {
 		display: flex;
 		align-items: center;
@@ -315,6 +347,7 @@
 		height: var(--size-medium);
 		border-radius: var(--border-radius-small);
 		border: 2px solid transparent;
+		background-color: #f5f5f5;
 	}
 
 	.icon-button * {
@@ -370,6 +403,9 @@
 		border-radius: var(--border-radius-small);
 		outline: none;
 		background-color: var(--white);
+	}
+	.input__field#sub-sections-input {
+		width: 30px;
 	}
 
 	.input__field:hover,
@@ -467,7 +503,7 @@
 		-moz-user-select: none;
 		-ms-user-select: none;
 		user-select: none;
-		padding: 0 var(--size-xxxsmall) 0 var(--size-xxsmall);
+		padding: 0 var(--size-xxxsmall) 0 0;
 	}
 
 	.type {
