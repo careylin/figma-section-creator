@@ -1,7 +1,7 @@
 {
-  "name": "denali-section-generator",
+  "name": "section-generator",
   "version": "1.0.0",
-  "description": "Create sections for handoff",
+  "description": "Create sections of sections for an organized design handoff",
   "main": "dist/code.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
