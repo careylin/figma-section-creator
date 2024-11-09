@@ -112,19 +112,19 @@ async function createSections(numberOfSubSections: number, sectionNames: string[
 					deskScreen.fills = [{ type: "SOLID", color: { r: 0.93, g: 0.92, b: 0.9 } }];
 
 					// Create notes frame with title and bullet points
-					const deskNotesFrame = createNotesFrame(font, deskScreen.x, deskScreen.y + deskScreen.height + SCREEN_GAP);
+					const deskNotesFrame = createNotesFrame(font, deskScreen.x, deskScreen.y + deskScreen.height + SCREEN_GAP, 700);
 					subSec.appendChild(deskScreen);
 					subSec.appendChild(deskNotesFrame);
 				}
 			}
 
-			function createNotesFrame(font: FontName, x: number, y: number): FrameNode {
+			function createNotesFrame(font: FontName, x: number, y: number, width: number): FrameNode {
 				// Add notes frame
 				const notesFrame = figma.createFrame();
 				notesFrame.layoutMode = "VERTICAL";
 				notesFrame.itemSpacing = 24;
 				notesFrame.layoutAlign = "STRETCH";
-				notesFrame.resizeWithoutConstraints(390, 80);
+				notesFrame.resizeWithoutConstraints(width, 80);
 				notesFrame.primaryAxisSizingMode = "AUTO";
 				notesFrame.counterAxisSizingMode = "FIXED";
 				notesFrame.fills = [{ type: "SOLID", color: { r: 1, g: 1, b: 1 }, opacity: 0 }];
@@ -180,7 +180,7 @@ async function createSections(numberOfSubSections: number, sectionNames: string[
 					subSec.appendChild(mobileScreen);
 
 					// Create notes frame for each mobile screen
-					const mobileNotesFrame = createNotesFrame(font, mobileScreen.x, mobileScreen.y + mobileScreen.height + SCREEN_GAP);
+					const mobileNotesFrame = createNotesFrame(font, mobileScreen.x, mobileScreen.y + mobileScreen.height + SCREEN_GAP, 390);
 					subSec.appendChild(mobileNotesFrame);
 				}
 			}
@@ -195,7 +195,6 @@ async function createSections(numberOfSubSections: number, sectionNames: string[
 			subSec.appendChild(titleFrame);
 			if (deskScreen) {
 				subSec.appendChild(deskScreen);
-				// subSec.appendChild(deskNotesFrame);
 			}
 			subSec.appendChild(subtitleText);
 			sec.appendChild(subSec);
