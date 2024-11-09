@@ -1,19 +1,19 @@
-	<!-- Number of Main sections -->	
-
-	<div class="flex row subsection-counter">
-		<p class="type--small">Number of main sections</p>
-		<div class="flex row">
-			<div class="icon-button" id="addInput">
-				<div class="icon icon--plus"></div>
-			</div>
-			<div class="icon-button" id="removeInput">
-				<div class="icon icon--minus"></div>
-			</div>
+<!-- Number of Main sections -->
+<div class="flex row counter-row">
+	<p class="label">Number of main sections</p>
+	<div class="flex row">
+		<div class="icon-button" id="addInput">
+			<div class="icon icon--plus"></div>
+		</div>
+		<div class="icon-button" id="removeInput">
+			<div class="icon icon--minus"></div>
 		</div>
 	</div>
-	<div class="flex column input-stack">
-		<!--Asks user for the section name-->
-		<label class="input__field-container" for="input1">
+</div>
+<!-- Main section input stack -->
+<div class="flex column input-stack mb-xsmall mt-xsmall">
+	<!--Asks user for the section name-->
+	<label class="input__field-container" for="input1">
 		<span class="label text-label">Section</span>
 		<input class="input__field named" required type="text" placeholder="Overview" />
 	</label>
@@ -22,17 +22,17 @@
 		<input class="input__field named" required type="text" placeholder="Components" />
 	</label>
 </div>
-<hr class="divider mb-small mt-small" />
-<!--subsections	-->
+
+<!--subsections per row	-->
 <div class="flex-container">
-	<div class="flex row subsection-counter">
-		<p class="type--small">Subsections per row</p>
+	<div class="flex row counter-row">
+		<p class="label">Subsections per row</p>
 		<div class="flex row">
 			<div class="icon-button" id="addSubSection">
 				<div class="icon icon--plus"></div>
 			</div>
 			<label for="sub-sections-input">
-				<input required class="input__field" id="sub-sections-input" type="text" value="1" />
+				<input required class="input__field inline-input" id="sub-sections-input" type="text" value="1" />
 			</label>
 			<div class="icon-button" id="removeSubSection">
 				<div class="icon icon--minus"></div>
@@ -40,16 +40,46 @@
 		</div>
 	</div>
 </div>
-<div class="flex column mb-xsmall">
-	<label class="input__field-container">
-		<input type="checkbox" id="includeMobile" class="checkbox" />
-		<span class="label">Include mobile screens</span>
-	</label>
-	<label class="input__field-container">
-		<input type="checkbox" id="includeDesktop" class="checkbox" />
-		<span class="label">Include desktop screens</span>
-	</label>
+<hr class="divider" />
+
+<!--Include mobile screens-->
+<div class="flex column mt-small mb-small">
+	<div class="flex row counter-row">
+		<label class="input__field-container">
+			<input type="checkbox" id="includeMobile" class="checkbox" />
+			<span class="label">Include mobile screens</span>
+		</label>
+		<div class="flex row mobile-counter-row hidden">
+			<div class="icon-button" id="addMobileScreen">
+				<div class="icon icon--plus"></div>
+			</div>
+			<label for="mobile-screens-input">
+				<input required class="input__field inline-input" id="mobile-screens-input" type="text" value="0" />
+			</label>
+			<div class="icon-button" id="removeMobileScreen">
+				<div class="icon icon--minus"></div>
+			</div>
+		</div>
 	</div>
+
+	<div class="flex row counter-row">
+		<label class="input__field-container">
+			<input type="checkbox" id="includeDesktop" class="checkbox" />
+			<span class="label">Include desktop screens</span>
+		</label>
+		<div class="flex row desktop-counter-row hidden">
+			<div class="icon-button" id="addDesktopScreen">
+				<div class="icon icon--plus"></div>
+			</div>
+			<label for="desktop-screens-input">
+				<input required class="input__field inline-input" id="desktop-screens-input" type="text" value="0" />
+			</label>
+			<div class="icon-button" id="removeDesktopScreen">
+				<div class="icon icon--minus"></div>
+			</div>
+		</div>
+	</div>
+</div>
 
 <!--Submit button-->
 <button class="button button--primary" id="submit">Generate</button>
@@ -63,6 +93,30 @@
 	const removeSubSection = document.getElementById("removeSubSection");
 	const submitButton = document.getElementById("submit");
 
+	// Get checkbox elements - Move these up before using them
+	const mobileCheckbox = document.getElementById("includeMobile");
+	const desktopCheckbox = document.getElementById("includeDesktop");
+
+	// Toggle desktop counter row visibility based on checkbox
+	desktopCheckbox.addEventListener("change", (e) => {
+		const desktopCounterRow = document.querySelector(".desktop-counter-row");
+		desktopCounterRow.classList.toggle("hidden", !e.target.checked);
+		if (e.target.checked) {
+			document.getElementById("desktop-screens-input").value = "1";
+		}
+		desktopCounterRow.classList.toggle("shown", e.target.checked);
+	});
+
+	// Toggle mobile counter row visibility based on checkbox
+	mobileCheckbox.addEventListener("change", (e) => {
+		const mobileCounterRow = document.querySelector(".mobile-counter-row");
+		mobileCounterRow.classList.toggle("hidden", !e.target.checked);
+		if (e.target.checked) {
+			document.getElementById("mobile-screens-input").value = "1";
+		}
+		mobileCounterRow.classList.toggle("shown", e.target.checked);
+	});
+
 	// Create new section input row
 	function createSectionInput() {
 		const inputs = document.getElementsByClassName("input__field named");
@@ -71,7 +125,7 @@
 				<span class="label text-label">Section</span>
 				<input class="input__field named" required type="text" placeholder="name">
 			</label>
-		`;
+			`;
 		inputStack.insertAdjacentHTML("beforeend", template);
 	}
 
@@ -91,6 +145,47 @@
 		subSectionsInput.value = currentValue + 1;
 	}
 
+	// Increment mobile screens count
+	function addMobileScreenCount() {
+		const mobileScreensInput = document.getElementById("mobile-screens-input");
+		const currentValue = parseInt(mobileScreensInput.value);
+		mobileScreensInput.value = currentValue + 1;
+	}
+
+	// Decrement mobile screens count if greater than 1
+	function removeMobileScreenCount() {
+		const mobileScreensInput = document.getElementById("mobile-screens-input");
+		const currentValue = parseInt(mobileScreensInput.value);
+		if (currentValue > 1) {
+			mobileScreensInput.value = currentValue - 1;
+		}
+	}
+
+	function addDesktopScreenCount() {
+		const desktopScreensInput = document.getElementById("desktop-screens-input");
+		const currentValue = parseInt(desktopScreensInput.value);
+		desktopScreensInput.value = currentValue + 1;
+	}
+
+	function removeDesktopScreenCount() {
+		const desktopScreensInput = document.getElementById("desktop-screens-input");
+		const currentValue = parseInt(desktopScreensInput.value);
+		if (currentValue > 1) {
+			desktopScreensInput.value = currentValue - 1;
+		}
+	}
+
+	// Add event listeners for mobile screen buttons
+	const addMobileScreen = document.getElementById("addMobileScreen");
+	const removeMobileScreen = document.getElementById("removeMobileScreen");
+	addMobileScreen.addEventListener("click", addMobileScreenCount);
+	removeMobileScreen.addEventListener("click", removeMobileScreenCount);
+
+	const addDesktopScreen = document.getElementById("addDesktopScreen");
+	const removeDesktopScreen = document.getElementById("removeDesktopScreen");
+	addDesktopScreen.addEventListener("click", addDesktopScreenCount);
+	removeDesktopScreen.addEventListener("click", removeDesktopScreenCount);
+
 	// Decrement subsection count if greater than 1
 	function removeSubSectionCount() {
 		const currentValue = parseInt(subSectionsInput.value);
@@ -103,17 +198,18 @@
 	addSubSection.addEventListener("click", addSubSectionCount);
 	removeSubSection.addEventListener("click", removeSubSectionCount);
 
-	// Get checkbox elements
-	const mobileCheckbox = document.getElementById("includeMobile");
-	const desktopCheckbox = document.getElementById("includeDesktop");
 	// Update submit form to include mobile checkbox state
 	function submitForm() {
 		const sectionInputs = document.getElementsByClassName("input__field named");
+		const mobileScreensInput = document.getElementById("mobile-screens-input");
+		const desktopScreensInput = document.getElementById("desktop-screens-input");
 		const pluginMessage = {
 			numberOfSubSections: subSectionsInput.value,
 			sectionNames: Array.from(sectionInputs).map((input) => input.value),
 			includeMobile: mobileCheckbox.checked,
-			includeDesktop: desktopCheckbox.checked
+			includeDesktop: desktopCheckbox.checked,
+			numberOfMobileScreens: parseInt(mobileScreensInput.value),
+			numberOfDesktopScreens: parseInt(desktopScreensInput.value),
 		};
 		parent.postMessage({ pluginMessage }, "*");
 	}
@@ -223,7 +319,7 @@
 		gap: 4px;
 	}
 
-	.subsection-counter {
+	.counter-row {
 		justify-content: space-between;
 		align-items: center;
 	}
@@ -241,9 +337,6 @@
 	}
 
 	/* layout utilities */
-	.hidden {
-		display: none;
-	}
 
 	.block {
 		display: block;
@@ -260,19 +353,31 @@
 	.column {
 		flex-direction: column;
 	}
+	.hidden {
+		display: none;
+		visibility: hidden;
+	}
+
+	.shown {
+		display: flex;
+		visibility: visible;
+	}
 
 	.row {
 		flex-direction: row;
 	}
 
 	.mb-small {
-		margin-bottom: var(--size-small);
+		margin-bottom: 16px;
 	}
 	.mb-xsmall {
-		margin-bottom: var(--size-xxsmall);
+		margin-bottom: 8px;
 	}
 	.mt-small {
-		margin-top: var(--size-small);
+		margin-top: 16px;
+	}
+	.mt-xsmall {
+		margin-top: 8px;
 	}
 
 	.button {
@@ -404,7 +509,7 @@
 		outline: none;
 		background-color: var(--white);
 	}
-	.input__field#sub-sections-input {
+	.inline-input {
 		width: 30px;
 	}
 
