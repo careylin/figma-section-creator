@@ -1,5 +1,5 @@
 {
-  "name": "Denali: Section Generator",
+  "name": "Section Generator",
   "id": "1429215015769964834",
   "api": "1.0.0",
   "main": "dist/code.js",

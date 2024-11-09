@@ -5,16 +5,11 @@ figma.ui.resize(300, 500);
 figma.ui.onmessage = (message) => {
 	NUM_MOBILE_SCREENS = message.numberOfMobileScreens;
 	NUM_DESK_SCREENS = message.numberOfDesktopScreens;
-	createSections(
-		message.numberOfSubSections, 
-		message.sectionNames, 
-		message.includeMobile, 
-		message.includeDesktop
-	);
+	createSections(message.numberOfSubSections, message.sectionNames, message.includeMobile, message.includeDesktop);
 };
 
-const FONT = { family: "Manrope", style: "Regular" };
-const MEDIUM_FONT = { family: "Manrope", style: "Medium" };
+const FONT = { family: "Inter", style: "Regular" };
+const MEDIUM_FONT = { family: "Inter", style: "Medium" };
 const FALLBACK_FONT = { family: "Inter", style: "Regular" };
 
 let NUM_MOBILE_SCREENS = 3;
@@ -27,6 +22,8 @@ const SEC_VMARGIN = SEC_HEIGHT + 500; // change number to increase vertical marg
 const SEC_PADDING = 80; // internal padding of the main section
 const TILE_HEIGHT = SEC_HEIGHT - SEC_PADDING * 2; // Height of the tile
 const SUB_GAP = 64; // H-gap between subsections
+
+let deskNotesFrame: FrameNode | undefined;
 
 async function loadFont(): Promise<FontName> {
 	try {
@@ -52,21 +49,25 @@ async function createSections(numberOfSubSections: number, sectionNames: string[
 		sec.y = i * SEC_VMARGIN;
 		sec.fills = [{ type: "SOLID", color: { r: 1, g: 1, b: 1 }, opacity: 0.2 }];
 
-		// Add section organizer
-		const coverTile = await figma.importComponentByKeyAsync("720ca13cba409e2efb5cee1171b2c6468e6daf04").then((c) => {
-			const instance = c.createInstance();
-			instance.resizeWithoutConstraints(1920, TILE_HEIGHT);
-			instance.x = instance.y = SEC_PADDING;
-			const titleNode = instance.findOne((node) => node.type === "TEXT" && node.name === "Title") as TextNode;
-			titleNode.characters = sectionNames[i] || `Section ${i + 1}`;
-			return instance;
-		});
+		const coverTile = figma.createFrame();
+		coverTile.fills = [{ type: "SOLID", color: { r: 0.15, g: 0.15, b: 0.15 } }];
+		const cTitleNode = figma.createText();
+		cTitleNode.fontName = font;
+		cTitleNode.fontSize = 128;
+		cTitleNode.fills = [{ type: "SOLID", color: { r: 1, g: 1, b: 1 } }];
+		cTitleNode.x = 200;
+		cTitleNode.y = 200;
+		coverTile.resizeWithoutConstraints(1920, TILE_HEIGHT);
+		coverTile.x = coverTile.y = SEC_PADDING;
+		cTitleNode.characters = sectionNames[i] || `Section ${i + 1}`;
+		coverTile.appendChild(cTitleNode);
 		sec.insertChild(0, coverTile);
 
 		for (let j = 0; j < numberOfSubSections; j++) {
 			const subSec = figma.createSection();
 			subSec.name = "—";
 			subSec.resizeWithoutConstraints(3220, TILE_HEIGHT);
+			
 			// define x position later down
 			subSec.y = SEC_PADDING;
 			subSec.fills = [{ type: "SOLID", color: { r: 1, g: 1, b: 1 }, opacity: 1 }];
@@ -99,22 +100,44 @@ async function createSections(numberOfSubSections: number, sectionNames: string[
 			subtitleText.name = "Subtitle";
 			subtitleText.fills = [{ type: "SOLID", color: { r: 0, g: 0, b: 0 } }];
 			subtitleText.x = titleFrame.x;
-			subtitleText.y = titleFrame.y + titleFrame.height + 80;
+			subtitleText.y = titleFrame.y + 80 + SCREEN_GAP; //80 is the title height
 
 			// Add content frame
 			if (includeDesktop) {
 				for (let k = 0; k < NUM_DESK_SCREENS; k++) {
 					deskScreen = figma.createFrame();
 					deskScreen.resizeWithoutConstraints(1440, 960);
-					deskScreen.x = titleFrame.x + (k * (deskScreen.width + SCREEN_GAP));
-					deskScreen.y = subtitleText.y + subtitleText.height + 200;
+					deskScreen.x = titleFrame.x + k * (deskScreen.width + SCREEN_GAP);
+					deskScreen.y = subtitleText.y + subtitleText.height + SCREEN_GAP * 2;
 					deskScreen.name = "Screen";
 					deskScreen.fills = [{ type: "SOLID", color: { r: 0.93, g: 0.92, b: 0.9 } }];
 
 					// Create notes frame with title and bullet points
-					const deskNotesFrame = createNotesFrame(font, deskScreen.x, deskScreen.y + deskScreen.height + SCREEN_GAP, 700);
+					deskNotesFrame = createNotesFrame(font, deskScreen.x, deskScreen.y + deskScreen.height + SCREEN_GAP, 700);
 					subSec.appendChild(deskScreen);
 					subSec.appendChild(deskNotesFrame);
+				}
+			}
+
+			// Only create mobile screens if includeMobile is true
+			if (includeMobile) {
+				for (let k = 0; k < NUM_MOBILE_SCREENS; k++) {
+					const mobileScreen = figma.createFrame();
+					mobileScreen.resizeWithoutConstraints(390, 844);
+					mobileScreen.x = titleFrame.x + (includeDesktop && deskScreen ? (deskScreen.width + SCREEN_GAP) * NUM_DESK_SCREENS : 0) + k * (390 + SCREEN_GAP);
+					mobileScreen.y = includeDesktop && deskScreen ? deskScreen.y : subtitleText.y + subtitleText.height + SCREEN_GAP * 2; //29 is the title height
+					mobileScreen.name = `Mobile ${k + 1}`;
+					mobileScreen.fills = [{ type: "SOLID", color: { r: 0.93, g: 0.92, b: 0.9 } }];
+					
+					// Create notes frame for each mobile screen
+					const mobileNotesFrame = createNotesFrame(
+						font,
+						mobileScreen.x,
+						includeDesktop && deskNotesFrame ? deskNotesFrame.y : mobileScreen.y + mobileScreen.height + SCREEN_GAP,
+						390
+					);
+					subSec.appendChild(mobileScreen);
+					subSec.appendChild(mobileNotesFrame);
 				}
 			}
 
@@ -160,35 +183,16 @@ async function createSections(numberOfSubSections: number, sectionNames: string[
 
 			// Calculate content and subsection width
 			const subSecMargin = titleFrame.x * 2;
-			const desktopWidth = includeDesktop ? (1440 + SCREEN_GAP) * NUM_DESK_SCREENS - SCREEN_GAP : 0;
-			const mobileWidth = includeMobile ? (390 + SCREEN_GAP) * 3 - SCREEN_GAP : 0;
+			const desktopWidth = includeDesktop ? (1440 * NUM_DESK_SCREENS) + ((NUM_DESK_SCREENS - 1) * SCREEN_GAP) : 0;
+			const mobileWidth = includeMobile ? (390 * NUM_MOBILE_SCREENS) + ((NUM_MOBILE_SCREENS - 1) * SCREEN_GAP) : 0;
 			const spaceBetweenDesktopAndMobile = includeDesktop && includeMobile ? SCREEN_GAP : 0;
 			const contentWidth = desktopWidth + mobileWidth + spaceBetweenDesktopAndMobile;
 			subSecWidth = contentWidth + subSecMargin;
 
-			// Only create mobile screens if includeMobile is true
-			if (includeMobile) {
-				for (let k = 0; k < NUM_MOBILE_SCREENS; k++) {
-					const mobileScreen = figma.createFrame();
-					mobileScreen.resizeWithoutConstraints(390, 844);
-					mobileScreen.x = titleFrame.x + 
-						(includeDesktop && deskScreen ? (deskScreen.width + SCREEN_GAP) * NUM_DESK_SCREENS : 0) + 
-						k * (390 + SCREEN_GAP);
-					mobileScreen.y = includeDesktop && deskScreen ? deskScreen.y : titleFrame.y + titleFrame.height + 200;
-					mobileScreen.name = `Mobile ${k + 1}`;
-					mobileScreen.fills = [{ type: "SOLID", color: { r: 0.93, g: 0.92, b: 0.9 } }];
-					subSec.appendChild(mobileScreen);
-
-					// Create notes frame for each mobile screen
-					const mobileNotesFrame = createNotesFrame(font, mobileScreen.x, mobileScreen.y + mobileScreen.height + SCREEN_GAP, 390);
-					subSec.appendChild(mobileNotesFrame);
-				}
-			}
-
 			// Calculate section width using the same formula as before
 			subSecWidth = contentWidth + subSecMargin;
 			subSec.resizeWithoutConstraints(subSecWidth, TILE_HEIGHT);
-			titleFrame.resize(contentWidth, 80);
+			titleFrame.resizeWithoutConstraints(contentWidth, 80);
 			subSec.x = SEC_PADDING + coverTile.width + j * (subSec.width + SUB_GAP);
 
 			// Add all elements to subsection
@@ -199,6 +203,7 @@ async function createSections(numberOfSubSections: number, sectionNames: string[
 			subSec.appendChild(subtitleText);
 			sec.appendChild(subSec);
 		}
+		
 		//resize section to fit all subsections
 		const secWidth = coverTile.width + SEC_PADDING * 2 + numberOfSubSections * subSecWidth + (numberOfSubSections - 1) * SUB_GAP;
 		sec.resizeWithoutConstraints(secWidth, SEC_HEIGHT);
