@@ -1,6 +1,6 @@
 {
   "name": "Section Generator",
-  "id": "1429215015769964834",
+  "id": "1437140862590125871",
   "api": "1.0.0",
   "main": "dist/code.js",
   "ui": "src/ui.html",
