@@ -1,10 +1,11 @@
 # figma-section-creator
 Figma plugin to automatically create sections for a design handoff
 
-![image](https://github.com/user-attachments/assets/5dd24f81-dc79-4cef-8864-0332521cd9fd)
+![image](https://github.com/user-attachments/assets/4726a826-1a8b-4bc8-92ee-78ca339db421)
+
 
 ### Name Each section ahead of time, and add as many section as you want
-<img width="635" alt="image" src="https://github.com/user-attachments/assets/0471a9ff-9b21-4abc-9489-22a2ce83aca8">
+![image](https://github.com/user-attachments/assets/db331ce9-07ef-4e3a-a7e3-0aa90e42f8c2)
 
 
 ### Subsections are organized horizontally in each top level section
